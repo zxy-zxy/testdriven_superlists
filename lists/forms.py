@@ -21,7 +21,7 @@ class ItemForm(forms.ModelForm):
             'text': {'required': EMPTY_ITEM_ERROR}
         }
 
-    def save(self, for_list):
+    def save(self, for_list, commit=True):
         self.instance.list = for_list
         return super().save()
 
@@ -29,6 +29,7 @@ class ItemForm(forms.ModelForm):
 class ExistingListItemForm(ItemForm):
     def __init__(self, for_list, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.instance.list = for_list
 
     def validate_unique(self):
         try:
@@ -36,3 +37,6 @@ class ExistingListItemForm(ItemForm):
         except ValidationError as e:
             e.error_dict = {'text': [DUPLICATE_ITEM_ERROR]}
             self._update_errors(e)
+
+    def save(self):
+        return forms.models.ModelForm.save(self)
