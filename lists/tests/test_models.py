@@ -1,8 +1,10 @@
-from django.db import IntegrityError
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
 from lists.models import Item, List
+
+User = get_user_model()
 
 
 class ListAndItemModelTest(TestCase):
@@ -57,3 +59,20 @@ class ItemModelText(TestCase):
     def test_default_text(self):
         item = Item()
         self.assertEqual(item.text, '')
+
+
+class ListModelTest(TestCase):
+    def test_get_absolute_url(self):
+        list_ = List.objects.create()
+        self.assertEqual(list_.get_absolute_url(), f'/lists/{list_.id}/')
+
+    def test_lists_can_have_owners(self):
+        user = User.objects.create(email='a@b.com')
+        list_ = List.objects.create(owner=user)
+        self.assertIn(list_, user.list_set.all())
+
+    def test_list_name_is_first_item_text(self):
+        list_ = List.objects.create()
+        Item.objects.create(list=list_, text='first item')
+        Item.objects.create(list=list_, text='second item')
+        self.assertEqual(list_.name, 'first item')
