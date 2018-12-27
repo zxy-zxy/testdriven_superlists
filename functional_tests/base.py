@@ -2,10 +2,16 @@ import os
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.conf import settings
+from django.contrib.auth import get_user_model
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
+
+from .management.commands.create_session import create_pre_authenticated_session
+
+User = get_user_model()
 
 MAX_WAIT = 10
 
@@ -33,6 +39,18 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
+
+    def create_pre_authenticated_session(self, email):
+        session_key = create_pre_authenticated_session(email)
+
+        ## to set a cookie we need to first visit the domain.
+        ## 404 pages load the quickest!
+        self.browser.get(self.live_server_url + "/404_no_such_url/")
+        self.browser.add_cookie(dict(
+            name=settings.SESSION_COOKIE_NAME,
+            value=session_key,
+            path='/',
+        ))
 
     def get_item_input_box(self):
         return self.browser.find_element_by_id('id_text')
