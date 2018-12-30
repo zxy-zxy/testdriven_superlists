@@ -11,4 +11,5 @@ urlpatterns = [
     path('new/', views.new_list2, name='new_list'),
     path('<int:list_id>/', views.view_list, name='view_list'),
     url(r'^users/(.+)/$', views.my_lists, name='my_lists'),
+    path('<int:list_id>/share/', views.share_list, name='share_list'),
 ]

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from django.core.exceptions import ValidationError
-from django.db.utils import IntegrityError
 from django.contrib.auth import get_user_model
 
 from lists.models import Item, List
 from lists.forms import ItemForm, ExistingListItemForm, NewListForm
+
+from accounts.service import get_or_create_user_by_email
 
 User = get_user_model()
 
@@ -49,3 +49,12 @@ def view_list(request, list_id):
 def my_lists(request, email):
     owner = User.objects.get(email=email)
     return render(request, 'lists/my_lists.html', {'owner': owner})
+
+
+def share_list(request, list_id):
+    list_ = List.objects.get(id=list_id)
+    to_share_with = request.POST.get('sharee')
+    user_to_share = get_or_create_user_by_email(to_share_with)
+    list_.shared_with.add(user_to_share)
+    list_.save()
+    return redirect(list_)

@@ -7,6 +7,7 @@ User = get_user_model()
 
 class List(models.Model):
     owner = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    shared_with = models.ManyToManyField(User, related_name='got_shared')
 
     def get_absolute_url(self):
         return reverse('lists:view_list', args=[self.id])

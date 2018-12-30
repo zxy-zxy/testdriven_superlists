@@ -25,6 +25,9 @@ class ListPage:
         self.wait_for_row_in_list_table(item_text, new_item_no)
         return self
 
+    def get_list_owner(self):
+        return self.test.browser.find_element_by_id('id_list_owner').text
+
     def get_share_box(self):
         return self.test.browser.find_element_by_css_selector(
             'input[name="sharee"]'

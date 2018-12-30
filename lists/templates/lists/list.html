@@ -1,5 +1,19 @@
 {% extends 'base.html' %}
-{% block header_text %}Your To-Do list{% endblock %}
+
+{% block navbar %}
+
+    <ul class="nav navbar-nav ">
+        <li><a href="{% url 'lists:view_list' list.id %}">Refresh list page</a></li>
+    </ul>
+
+{% endblock %}
+
+{% block header_text %}
+    <p id="id_list_owner">
+        This list belongs to: {{ list.owner.email }}
+    </p>
+    Your To-Do list
+{% endblock %}
 {% block form_action %}{% url 'lists:view_list' list.id %}{% endblock %}
 {% block table %}
     <table id="id_list_table" class="table">
@@ -9,4 +23,33 @@
             </tr>
         {% endfor %}
     </table>
+
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <h3>List shared with:</h3>
+            <ul class="list-sharee">
+                {% for sharee in list.shared_with.all %}
+                    <li>{{ sharee.email }}</li>
+                {% empty %}
+                    <h3>Nobody received this list yet.</h3>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            {% if user.is_authenticated %}
+                <h3>Share this list:</h3>
+                <form class=""
+                      method="POST"
+                      action="{% url 'lists:share_list' list.id %}">
+                    <input class="form-control" name="sharee" type="text" placeholder="your-friend@example.com"/>
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+
 {% endblock %}

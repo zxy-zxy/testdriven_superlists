@@ -76,3 +76,8 @@ class ListModelTest(TestCase):
         Item.objects.create(list=list_, text='first item')
         Item.objects.create(list=list_, text='second item')
         self.assertEqual(list_.name, 'first item')
+
+    def test_has_shared_with_attribute(self):
+        self.assertTrue(hasattr(List, 'shared_with'))
+        list_ = List.objects.create()
+        self.assertTrue(hasattr(list_.shared_with, 'add'))

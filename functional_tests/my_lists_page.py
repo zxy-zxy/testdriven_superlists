@@ -11,5 +11,3 @@ class MyListsPage:
         ))
         return self
 
-    def get_list_owner(self):
-        return self.test.browser.find_element_by_id('id_list_owner').text
